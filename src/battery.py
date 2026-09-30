@@ -80,10 +80,25 @@ def simulate_charge_minute(charge, temp, time, health, cases, is_fast_charging, 
 
     return charge, temp, time, health, is_fast_charging, bad_health_cap
 
-def simulate_use_minute():
-    pass
-def simulate_idle_minute():
-    pass
+def simulate_use_minute(charge, temp, time):
+    '''Return charge, temp, and time after one minute of use.'''
+    time += 1
+    if charge > 0.0:
+        charge = max(0.0, charge - 2.0)
+        temp += 1.0
+    else:
+        temp = max(0.0, temp - 1.0)
+
+    return charge, temp, time
+
+def simulate_idle_minute(charge, temp, time):
+    '''Return charge, temp, and time after one minute of idling.'''
+    time += 1
+    charge = max(0.0, charge - 0.5)
+    temp = max(0.0, temp - 1.0)
+
+    return charge, temp, time
+
 def simulate_activity(activity, duration):
     global cur_charge, cur_temp, cur_time, good_battery_health, overcharge_cases
     if activity not in ("charge", "use", "idle"):
