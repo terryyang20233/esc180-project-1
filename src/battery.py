@@ -56,7 +56,28 @@ def check_overcharge(old_charge, charge, time, cases, health):
     return health, bad_health_cap
 
 def charge_time_needed(minutes):
-    pass
+    global cur_charge, cur_temp, cur_time, good_battery_health, overcharge_cases
+    charge_needed = minutes * 2
+
+    if charge_needed > 100 or charge_needed < 0:
+        return None
+    elif charge_needed <= cur_charge:
+        return 0
+
+    s_cur_charge = cur_charge
+    s_cur_temp = cur_temp
+    s_good_battery_health = good_battery_health
+    s_cur_time = cur_time
+    s_overcharge_cases = overcharge_cases.copy()
+    s_is_fast_charging = can_fast_charge(s_cur_charge, s_cur_temp, s_good_battery_health)
+    s_good_battery_health, s_bad_health_cap = check_overcharge(0.0, s_cur_time, s_cur_charge, s_overcharge_cases, s_good_battery_health)
+
+    start_time = s_cur_time
+
+    while s_cur_charge < charge_needed:
+        s_cur_charge, s_cur_temp, s_cur_time, s_good_battery_health, s_is_fast_charging, s_bad_health_cap = simulate_charge_minute(s_cur_charge, s_cur_temp, s_cur_time, s_good_battery_health, s_overcharge_cases, s_is_fast_charging, s_bad_health_cap)
+
+    return s_cur_time - start_time
 
 def simulate_charge_minute(charge, temp, time, health, cases, is_fast_charging, bad_health_cap):
     time += 1
