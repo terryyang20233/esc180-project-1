@@ -111,6 +111,14 @@ def simulate_activity(activity, duration):
         for i in range(duration):
             cur_charge, cur_temp, cur_time, good_battery_health, is_fast_charging, bad_health_cap = simulate_charge_minute(cur_charge, cur_temp, cur_time, good_battery_health, overcharge_cases, is_fast_charging, bad_health_cap)
 
+    elif activity == "use":
+        for i in range(duration):
+            cur_charge, cur_temp, cur_time = simulate_use_minute(cur_charge, cur_temp, cur_time)
+
+    elif activity == "idle":
+        for i in range(duration):
+            cur_charge, cur_temp, cur_time = simulate_idle_minute(cur_charge, cur_temp, cur_time)
+
 if __name__ == '__main__':
     initialize()
 
