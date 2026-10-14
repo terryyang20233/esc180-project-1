@@ -49,7 +49,7 @@ def check_overcharge(old_charge, charge, time, cases, health):
     if old_charge < 90 and charge >= 90:
         cases.append(time)
         if len(cases) >= 3:
-            if time - cases[-3] <= 360:
+            if time - cases[-3] < 360:
                 health = False
                 bad_health_cap = max(80.0, charge)
 
@@ -70,13 +70,15 @@ def charge_time_needed(minutes):
     s_cur_time = cur_time
     s_overcharge_cases = overcharge_cases.copy()
     s_is_fast_charging = can_fast_charge(s_cur_charge, s_cur_temp, s_good_battery_health)
-    s_good_battery_health, s_bad_health_cap = check_overcharge(0.0, s_cur_time, s_cur_charge, s_overcharge_cases, s_good_battery_health)
+    s_good_battery_health, s_bad_health_cap = check_overcharge(s_cur_charge, s_cur_charge, s_cur_time, s_overcharge_cases, s_good_battery_health)
 
     start_time = s_cur_time
 
     while s_cur_charge < charge_needed:
+        prev_charge = s_cur_charge
         s_cur_charge, s_cur_temp, s_cur_time, s_good_battery_health, s_is_fast_charging, s_bad_health_cap = simulate_charge_minute(s_cur_charge, s_cur_temp, s_cur_time, s_good_battery_health, s_overcharge_cases, s_is_fast_charging, s_bad_health_cap)
-
+        if s_cur_charge <= prev_charge:
+            return None
     return s_cur_time - start_time
 
 def simulate_charge_minute(charge, temp, time, health, cases, is_fast_charging, bad_health_cap):
